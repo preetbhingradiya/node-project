@@ -2,6 +2,9 @@ import express from "express";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import Jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import path  from "path";
+
 
 mongoose
   .connect("mongodb://127.0.0.1:27017")
@@ -19,6 +22,7 @@ const User = mongoose.model("user", userchema);
 // const user = [];
 
 const app = express();
+app.use(express.static(path.join(path.resolve(),"public")))  //public folder uplode
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -45,13 +49,20 @@ app.get("/", (req, res) => {
   });
 
   app.post("/register", async (req, res) => {
-    const { email } = req.body;
+    const { name,email,password } = req.body;
 
     const cheack = await User.findOne({ email });
     if (cheack) {
       return res.redirect("/login");
     } else {
-      const data = await User.create(req.body);
+
+      const hashedpassword=await bcrypt.hash(password,10)  //read hash password
+
+      const data = await User.create({
+        name,
+        email,
+        password:hashedpassword,
+      });
 
       const id = Jwt.sign({ _id: data._id }, "sdfguikmnfchjwio");
 
@@ -65,27 +76,26 @@ app.get("/", (req, res) => {
   app.post("/login", async (req, res) => {
     let { email, password } = req.body;
 
-    const cheackemail = await User.findOne({ email });
-
-    const ismatchpass=await User.findOne({password})
-
-    //checak email
-    if (!cheackemail) {
+    //check email
+    const check = await User.findOne({ email });
+    if (!check ) {
       return res.redirect("/register");
     }
 
-    //checak password
-    if(ismatchpass.password===password){
-      const data = await User.create(req.body);
 
-      const id = Jwt.sign({ _id: data._id }, "sdfguikmnfchjwio");
+    //check password
+    // const match= check.password=== password
+    const match=await bcrypt.compare(password,check.password)
+    if(match){
+      
+      const id = Jwt.sign({ _id: check._id }, "sdfguikmnfchjwio");
 
       res.cookie("token", id, {
         httpOnly: true,
       });
       res.redirect("/login")
     }else{
-      console.log("invalid password");
+     res.render('login',{email ,message:"Invalid password"})
     }
 
   });

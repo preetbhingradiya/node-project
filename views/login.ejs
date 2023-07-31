@@ -1,18 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-</head>
-<body>
-    <h1>login page</h1>
+    <link rel="stylesheet" href="login.css">
+
+  </head>
+  <body>
     <main>
-        <form method="post" action="/login ">
-            <input type="email" name="email" placeholder="Email">
-            <input type="password" name="password" placeholder="Password">
-            <button type="submit">Log In</button>
-        </form>
+      <form method="post" action="/login ">
+        <div class="round">
+          <i class="fa-solid fa-user"></i>
+        </div>
+        <div class="fixed">
+          <h2>Login-page </h2>
+          <div class="check">
+            <input type="email" name="email" placeholder="Email" value="<%=locals.email%>" id="email"/>
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <div class="check">
+            <input type="password" name="password" placeholder="Password" id="password"/>
+            <i class="fa-solid fa-lock"></i>
+          </div>
+          <p><%=locals.message%></p>
+          <div clas="wrapper">
+              <input type="submit" value="login" class="btn">
+          </div>
+        </div>
+      </form>
     </main>
-</body>
+  </body>
+  <script
+  src="https://kit.fontawesome.com/e500e5c4a4.js"
+  crossorigin="anonymous"
+></script>  
 </html>
