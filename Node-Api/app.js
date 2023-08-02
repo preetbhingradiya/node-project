@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import router from "./routes/user.js";
 import database from "./config/db.js";
 import { config } from "dotenv";
-import cookie from "cookie-parser";
+import cookieParser from "cookie-parser";
 
 config({path:".env"})
 
@@ -11,8 +11,8 @@ const app = express();
 
 
 app.use(express.json())
-app.use(router)
-
+app.use(cookieParser())
+app.use("/users",router)
 
 
 app.listen(process.env.PORT, () => {

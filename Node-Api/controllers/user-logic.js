@@ -1,6 +1,9 @@
 import User from "../model/schema-model.js";
+import bcrypt from "bcrypt";
+import { setcookie } from "../utils/fetuser.js";
+import jwt from "jsonwebtoken";
 
- export const getuser = async (req, res) => {
+export const getuser = async (req, res) => {
   const userdata = await User.find({});
 
   res.json({
@@ -9,39 +12,66 @@ import User from "../model/schema-model.js";
   });
 };
 
-export const showuser=async (req, res) => {
-  
-    let {name,email,password}=req.body
+export const login = async (req, res) => {
+  const { email, password } = req.body;
 
-     await User.create({
-    name,
-    email,
-    password
-  });
+  const oneuser = await User.findOne({ email }).select("+password"); //schema pass is seclect:false
 
-  res.status(201).cookie("tempi","store").send(req.body);
-}
+  if (!oneuser) {
+    res.status(404).json({
+      Messagte: "Invalid email or password",
+    });
+  }
 
-export const findid=async(req,res)=>{
-    // let {id}=req.query
-    // const userid=await User.findById(id)
+  const isMatch = await bcrypt.compare(password, oneuser.password);
 
-    const userid=await User.findById(req.params.id)
+  if (!isMatch) {
+    res.status(404).json({
+      Messagte: "Invalid email or password",
+    });
+  }
 
-    res.send(userid)
-}
+  setcookie(oneuser, res, `Welcome Back, ${oneuser.name}`, 201);
+};
 
-export const updateid=async(req,res)=>{
+export const register = async (req, res) => {
+  let { name, email, password } = req.body;
 
-    const userid=await User.findByIdAndUpdate(req.params.id,req.body)
+  const matchemail = await User.findOne({ email });
 
-    res.send(userid)
-}
+  if (matchemail) {
+    res.status(404).json({
+      Messagte: "User Alredey Exit",
+    });
+  } else {
+    const hashpass = await bcrypt.hash(password, 10);
+    const data = await User.create({
+      name,
+      email,
+      password: hashpass,
+    });
 
-export const deleteid=async(req,res)=>{
+    setcookie(data, res, "User add", 201);
+  }
+};
 
-    const userid=await User.findByIdAndDelete(req.params.id)
+export const myprofile = async (req, res) => {
+  let id = "myid";
 
-    res.send(userid)
-}
+  const { token } = req.cookies;
 
+
+  if (!token) {
+    res.status(404).json({
+      Messagte: "Login First",
+    });
+  } 
+  else {
+    const decode = await jwt.verify(token, process.env.JWT_SECRET);
+    const userId = await User.findById(decode._id);
+    res.status(201).json({
+      success: true,
+      userId,
+    });
+  }
+};
