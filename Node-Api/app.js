@@ -1,6 +1,6 @@
 import express from "express";
-import mongoose from "mongoose";
 import router from "./routes/user.js";
+import taskrouter from "./routes/task.js";
 import database from "./config/db.js";
 import { config } from "dotenv";
 import cookieParser from "cookie-parser";
@@ -12,7 +12,9 @@ const app = express();
 
 app.use(express.json())
 app.use(cookieParser())
+
 app.use("/users",router)
+app.use("/task",taskrouter)
 
 
 app.listen(process.env.PORT, () => {
