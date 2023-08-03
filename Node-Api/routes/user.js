@@ -1,5 +1,6 @@
 import express  from "express";
-import {  getuser,  login,  myprofile,  register,  } from "../controllers/user-logic.js";
+import {  getuser,  login,  logout,  myprofile,  register,  } from "../controllers/user-logic.js";
+import { isAuthentic } from "../middlewares/authentic.js";
 
 const router =express.Router()
 
@@ -9,7 +10,9 @@ router.post("/login",login);
 
 router.post("/register",register);
 
-router.get("/profile",myprofile)
+router.get("/logout",logout)
+
+router.get("/profile",isAuthentic,myprofile)
 
 // router.route('/userid/:id').get(findid).patch(updateid).delete(deleteid)
 //same route name then also can decler this method

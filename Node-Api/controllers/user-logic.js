@@ -1,7 +1,6 @@
 import User from "../model/schema-model.js";
 import bcrypt from "bcrypt";
 import { setcookie } from "../utils/fetuser.js";
-import jwt from "jsonwebtoken";
 
 export const getuser = async (req, res) => {
   const userdata = await User.find({});
@@ -55,23 +54,17 @@ export const register = async (req, res) => {
   }
 };
 
+export const logout = (req, res) => {
+  res.status(200)
+  .cookie("token", null)
+  .json({
+    success:true,
+  });
+};
+
 export const myprofile = async (req, res) => {
-  let id = "myid";
-
-  const { token } = req.cookies;
-
-
-  if (!token) {
-    res.status(404).json({
-      Messagte: "Login First",
-    });
-  } 
-  else {
-    const decode = await jwt.verify(token, process.env.JWT_SECRET);
-    const userId = await User.findById(decode._id);
-    res.status(201).json({
-      success: true,
-      userId,
-    });
-  }
+  res.status(200).json({
+    success: true,
+    userId: req.userId,
+  });
 };
