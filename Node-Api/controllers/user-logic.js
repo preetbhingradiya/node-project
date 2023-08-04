@@ -59,6 +59,8 @@ export const logout = (req, res) => {
   .cookie("token", null)
   .json({
     success:true,
+    sametime: process.env.NODE_ENV === "devlopment" ? "lax" : "none",    
+    secure: process.env.NODE_ENV === "devlopment" ? false : true,
   });
 };
 
