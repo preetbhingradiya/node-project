@@ -6,13 +6,14 @@ const router =express.Router()
 
 router.get("/all",getuser);
   
-router.post("/login",login);
+router.post("/login",login)
+
 
 router.post("/register",register);
 
 router.get("/logout",logout)
 
-router.get("/profile",isAuthentic,myprofile)
+router.get("/me",isAuthentic,myprofile)
 
 // router.route('/userid/:id').get(findid).patch(updateid).delete(deleteid)
 //same route name then also can decler this method
